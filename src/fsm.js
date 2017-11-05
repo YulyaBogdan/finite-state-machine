@@ -3,30 +3,56 @@ class FSM {
      * Creates new FSM instance.
      * @param config
      */
-    constructor(config) {}
+    constructor(config) {
+        this.arrOfStates = Object.keys(config.states);
+        if(this.arrOfStates.indexOf(config.initial) === -1)
+            throw Error();
+        this.seqOfStates = [];
+        this.config = config;
+        this.seqOfStates.push(this.config.initial);
+    }
 
     /**
      * Returns active state.
      * @returns {String}
      */
-    getState() {}
+    getState() {
+        return this.config.initial;
+    }
 
     /**
      * Goes to specified state.
      * @param state
      */
-    changeState(state) {}
+    changeState(state) {
+        if (this.arrOfStates.indexOf(state) === -1)
+            throw Error();
+        this.config.initial = state;
+        this.seqOfStates.push(this.config.initial);
+    }
 
     /**
      * Changes state according to event transition rules.
      * @param event
      */
-    trigger(event) {}
+    trigger(event) {
+        var temp = Object.keys(this.config.states);
+        var a = temp.indexOf(this.config.initial);
+        var b = Object.values(Object.values(this.config.states)[a].transitions);
+        var c = Object.keys(b);
+        var d = Object.values(b);
+        var i = c.indexOf(event);
+        //if (d === -1) throw Error();
+        this.config.initial = d[i];
+        this.seqOfStates.push(this.config.initial);
+    }
 
     /**
      * Resets FSM state to initial.
      */
-    reset() {}
+    reset() {
+        this.config.initial = this.seqOfStates[0];
+    }
 
     /**
      * Returns an array of states for which there are specified event transition rules.
@@ -34,7 +60,9 @@ class FSM {
      * @param event
      * @returns {Array}
      */
-    getStates(event) {}
+    getStates(event) {
+
+    }
 
     /**
      * Goes back to previous state.
@@ -53,7 +81,9 @@ class FSM {
     /**
      * Clears transition history
      */
-    clearHistory() {}
+    clearHistory() {
+
+    }
 }
 
 module.exports = FSM;

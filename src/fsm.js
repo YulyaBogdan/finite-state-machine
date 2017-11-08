@@ -37,12 +37,10 @@ class FSM {
      * @param event
      */
     trigger(event) {
-        let temp1 =  Object.keys(this.states);
-        let i = temp1.indexOf(this.initial);
-        temp1 = Object.values(this.states);
-        let temp = temp1[i].transitions;
-        if(temp.hasOwnProperty(event)) {
-            this.initial = temp[event];
+        let i = Object.keys(this.states).indexOf(this.initial);
+        let temp = Object.values(this.states);
+        if(temp[i].transitions.hasOwnProperty(event)) {
+            this.initial = temp[i].transitions[event];
             this.seqOfStates.push(this.initial);
         }
         else throwError();
@@ -65,27 +63,52 @@ class FSM {
      * @returns {Array}
      */
     getStates(event) {
-
+        let resArr = []
+        let temp = Object.values(this.states);
+        let temp1 = Object.keys(this.states);
+        if(arguments.length === 0)
+            return temp1;
+        for (let i = 0; i < temp.length; i++) {
+            if(temp[i].transitions.hasOwnProperty(event)) {
+                resArr.push(temp1[i])
+            }
+        }
+        return resArr;
     }
+
+
 
     /**
      * Goes back to previous state.
      * Returns false if undo is not available.
      * @returns {Boolean}
      */
-    undo() {}
+    undo() {
+        if(this.seqOfStates.length === 1)
+            return false;
+        this.changeState(this.seqOfStates[this.seqOfStates.length - 2]);
+        return true;
+    }
 
     /**
      * Goes redo to state.
      * Returns false if redo is not available.
      * @returns {Boolean}
      */
-    redo() {}
+    redo() {
+        if (this.seqOfStates.length === 1)
+            return false;
+        this.changeState(this.seqOfStates[this.seqOfStates.length - 1]);
+        return true;
+    }
 
     /**
      * Clears transition history
      */
     clearHistory() {
+        let temp = this.seqOfStates.shift();
+        this.seqOfStates = []
+        this.seqOfStates.push(temp);
 
     }
 }

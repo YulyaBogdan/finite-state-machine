@@ -6,10 +6,11 @@ class FSM {
     constructor(config) {
         this.arrOfStates = Object.keys(config.states);
         if(this.arrOfStates.indexOf(config.initial) === -1)
-            throw Error();
+            throwError();
         this.seqOfStates = [];
-        this.config = config;
-        this.seqOfStates.push(this.config.initial);
+        this.initial = config.initial;
+        this.states = config.states;
+        this.seqOfStates.push(this.initial);
     }
 
     /**
@@ -17,7 +18,7 @@ class FSM {
      * @returns {String}
      */
     getState() {
-        return this.config.initial;
+        return this.initial;
     }
 
     /**
@@ -26,9 +27,9 @@ class FSM {
      */
     changeState(state) {
         if (this.arrOfStates.indexOf(state) === -1)
-            throw Error();
-        this.config.initial = state;
-        this.seqOfStates.push(this.config.initial);
+            throwError();
+        this.initial = state;
+        this.seqOfStates.push(this.initial);
     }
 
     /**
@@ -36,22 +37,25 @@ class FSM {
      * @param event
      */
     trigger(event) {
-        var temp = Object.keys(this.config.states);
-        var a = temp.indexOf(this.config.initial);
-        var b = Object.values(Object.values(this.config.states)[a].transitions);
-        var c = Object.keys(b);
-        var d = Object.values(b);
-        var i = c.indexOf(event);
-        //if (d === -1) throw Error();
-        this.config.initial = d[i];
-        this.seqOfStates.push(this.config.initial);
+        let temp1 =  Object.keys(this.states);
+        let i = temp1.indexOf(this.initial);
+        temp1 = Object.values(this.states);
+        let temp = temp1[i].transitions;
+        if(temp.hasOwnProperty(event)) {
+            this.initial = temp[event];
+            this.seqOfStates.push(this.initial);
+        }
+        else throwError();
     }
 
     /**
      * Resets FSM state to initial.
      */
     reset() {
-        this.config.initial = this.seqOfStates[0];
+        let temp = this.seqOfStates[0];
+        this.changeState(temp);
+        this.seqOfStates = [];
+        this.seqOfStates.push(temp)
     }
 
     /**

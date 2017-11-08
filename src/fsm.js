@@ -43,7 +43,7 @@ class FSM {
             this.initial = temp[i].transitions[event];
             this.seqOfStates.push(this.initial);
         }
-        else throwError();
+        else throw Error();
     }
 
     /**
@@ -84,10 +84,16 @@ class FSM {
      * @returns {Boolean}
      */
     undo() {
-        if(this.seqOfStates.length === 1)
-            return false;
-        this.changeState(this.seqOfStates[this.seqOfStates.length - 2]);
-        return true;
+        if (this.seqOfStates.length === 2 ||
+            (this.seqOfStates.length === 3 &&
+                this.seqOfStates[this.seqOfStates.length-1] !== this.seqOfStates[this.seqOfStates.length-3]) ||
+            (this.seqOfStates.length >= 4 &&
+                (this.seqOfStates[this.seqOfStates.length-1] !== this.seqOfStates[this.seqOfStates.length-3] ||
+                    this.seqOfStates[this.seqOfStates.length-4] !== this.seqOfStates[this.seqOfStates.length-2]))){
+            this.changeState(this.seqOfStates[this.seqOfStates.length - 2]);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -96,10 +102,16 @@ class FSM {
      * @returns {Boolean}
      */
     redo() {
-        if (this.seqOfStates.length === 1)
-            return false;
-        this.changeState(this.seqOfStates[this.seqOfStates.length - 1]);
-        return true;
+        if (this.seqOfStates.length === 2 ||
+            (this.seqOfStates.length === 3 &&
+                this.seqOfStates[this.seqOfStates.length-1] === this.seqOfStates[this.seqOfStates.length-3]) ||
+            (this.seqOfStates.length >= 4 &&
+                this.seqOfStates[this.seqOfStates.length-1] === this.seqOfStates[this.seqOfStates.length-3] &&
+                this.seqOfStates[this.seqOfStates.length-4] !== this.seqOfStates[this.seqOfStates.length-2])){
+            this.changeState(this.seqOfStates[this.seqOfStates.length - 2]);
+            return true;
+        }
+        return false;
     }
 
     /**
